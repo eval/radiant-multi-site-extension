@@ -1,6 +1,7 @@
 module MultiSite::PageExtensions
   def self.included(base)
     base.class_eval {
+      alias_method_chain :path, :sites
       alias_method_chain :url, :sites
       mattr_accessor :current_site
       has_one :site, :foreign_key => "homepage_id", :dependent => :nullify
@@ -22,11 +23,13 @@ module MultiSite::PageExtensions
     end
   end
   
-  def url_with_sites
+  def path_with_sites
     if parent
       parent.child_url(self)
     else
       "/"
     end
   end
+  # #url is still used by Radiant
+  alias_method :url_with_sites, :path_with_sites
 end
